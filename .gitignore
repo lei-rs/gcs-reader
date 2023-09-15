@@ -1,0 +1,6 @@
+/target
+/Cargo.lock
+.env
+/.idea
+creds.json
+.DS_Store

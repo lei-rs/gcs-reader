@@ -2,9 +2,12 @@
 name = "gcs-reader"
 version = "0.1.0"
 edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/leifu1128/gcs-reader"
 exclude = [
     "tests/*",
-    "rustfmt.toml"
+    "rustfmt.toml",
+    ".gitignore",
 ]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

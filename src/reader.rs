@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use std::io::{Read, Seek, SeekFrom};
+use std::pin::Pin;
+use std::task::{Context, Poll};
 
 use bytes::Bytes;
 use color_eyre::eyre::{ensure, eyre, Result};
@@ -7,6 +9,7 @@ use gcp_auth::AuthenticationManager;
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, RANGE};
 use reqwest::{Client, ClientBuilder};
 use serde_json::Value;
+use tokio::io::{AsyncRead, ReadBuf};
 use tokio::runtime::Runtime;
 
 use crate::errors::GCSReaderError;
@@ -130,19 +133,32 @@ impl Read for GCSReader {
     }
 }
 
+impl AsyncRead for GCSReader {
+    fn poll_read(self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &mut ReadBuf<'_>) -> Poll<std::io::Result<()>> {
+        todo!()
+    }
+}
+
 impl Seek for GCSReader {
     fn seek(&mut self, pos: SeekFrom) -> std::io::Result<u64> {
-        match pos {
+        let new_pos = match pos {
             SeekFrom::Start(pos) => {
-                self.pos = pos;
+                pos as i64
             }
             SeekFrom::End(pos) => {
-                self.pos = (self.len as i64 + pos) as u64;
+                self.len as i64 + pos
             }
             SeekFrom::Current(pos) => {
-                self.pos = (self.pos as i64 + pos) as u64;
+                self.pos as i64 + pos
             }
+        };
+        if new_pos < 0 && new_pos >= self.len as i64 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                format!("Invalid seek position: {}", new_pos),
+            ));
         }
+        self.pos = new_pos as u64;
         Ok(self.pos)
     }
 }

@@ -92,7 +92,7 @@ impl GCSReader {
         Self::open(uri, auth)
     }
 
-    async fn read_range(&mut self, start: u64, end: u64) -> Result<Bytes> {
+    pub async fn read_range(&mut self, start: u64, end: u64) -> Result<Bytes> {
         let range = format!("bytes={}-{}", start, end - 1);
         let mut header = HeaderMap::new();
         header.insert(RANGE, HeaderValue::from_str(&range)?);

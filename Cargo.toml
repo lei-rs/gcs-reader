@@ -1,6 +1,6 @@
 [package]
 name = "gcs-reader"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Read + Seek for Google Cloud Storage"
 license = "Apache-2.0"

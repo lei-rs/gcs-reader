@@ -142,15 +142,9 @@ impl AsyncRead for GCSReader {
 impl Seek for GCSReader {
     fn seek(&mut self, pos: SeekFrom) -> std::io::Result<u64> {
         let new_pos = match pos {
-            SeekFrom::Start(pos) => {
-                pos as i64
-            }
-            SeekFrom::End(pos) => {
-                self.len as i64 + pos
-            }
-            SeekFrom::Current(pos) => {
-                self.pos as i64 + pos
-            }
+            SeekFrom::Start(pos) => pos as i64,
+            SeekFrom::End(pos) => self.len as i64 + pos,
+            SeekFrom::Current(pos) => self.pos as i64 + pos,
         };
         if new_pos < 0 && new_pos >= self.len as i64 {
             return Err(std::io::Error::new(
